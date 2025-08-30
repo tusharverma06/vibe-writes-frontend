@@ -7,14 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { ThemeToggle } from '@/components/common/theme-toggle';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Bell, Shield, Palette, Camera, Save, Loader2, AlertTriangle } from 'lucide-react';
+import { User, Camera, Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import apiService from '@/lib/api';
 
@@ -31,24 +26,10 @@ interface UserSettings {
   avatar: string | null;
 }
 
-interface NotificationSettings {
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  commentReplies: boolean;
-  blogLikes: boolean;
-  newFollowers: boolean;
-}
-
-interface PrivacySettings {
-  profileVisibility: 'public' | 'private';
-  showEmail: boolean;
-  showLocation: boolean;
-}
 
 export default function SettingsPage() {
   const { user, isAuthenticated, updateUser } = useAuth();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
   // Form states
@@ -64,30 +45,6 @@ export default function SettingsPage() {
     github: '',
     avatar: null
   });
-  
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    emailNotifications: true,
-    pushNotifications: true,
-    commentReplies: true,
-    blogLikes: false,
-    newFollowers: true
-  });
-  
-  const [privacy, setPrivacy] = useState<PrivacySettings>({
-    profileVisibility: 'public',
-    showEmail: false,
-    showLocation: true
-  });
-  
-  // Dialog states
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -102,11 +59,11 @@ export default function SettingsPage() {
         lastName: user.lastName || '',
         username: user.username || '',
         email: user.email || '',
-        bio: user.bio || '',
-        location: user.location || '',
-        website: user.website || '',
-        twitter: user.twitter || '',
-        github: user.github || '',
+        bio:  '',
+        location:  '',
+        website: '',
+        twitter: '',
+        github:  '',
         avatar: user.avatar
       });
     }
@@ -139,50 +96,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handlePasswordChange = async () => {
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error('New passwords do not match');
-      return;
-    }
-    
-    if (passwordForm.newPassword.length < 8) {
-      toast.error('Password must be at least 8 characters long');
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      // In a real app, you'd have a change password endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      toast.success('Password changed successfully!');
-      setShowPasswordDialog(false);
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (error) {
-      toast.error('Failed to change password');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (deleteConfirmation !== 'DELETE') {
-      toast.error('Please type "DELETE" to confirm');
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      // In a real app, you'd call the delete account endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      toast.success('Account deleted successfully');
-      // Redirect to home or login
-      router.push('/');
-    } catch (error) {
-      toast.error('Failed to delete account');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (!isAuthenticated || !user) {
     return null;
@@ -198,7 +111,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="max-w-2xl mx-auto">
           {/* Profile Settings */}
           <Card>
             <CardHeader>
@@ -342,300 +255,6 @@ export default function SettingsPage() {
                   </>
                 )}
               </Button>
-            </CardContent>
-          </Card>
-
-          {/* Appearance Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
-                Appearance
-              </CardTitle>
-              <CardDescription>
-                Customize how the application looks and feels
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Theme</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Choose your preferred color scheme
-                  </p>
-                </div>
-                <ThemeToggle />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Font Size</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Adjust the reading font size
-                  </p>
-                </div>
-                <Select defaultValue="medium">
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notification Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                Notifications
-              </CardTitle>
-              <CardDescription>
-                Control how and when you receive notifications
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive updates via email
-                  </p>
-                </div>
-                <Switch 
-                  checked={notifications.emailNotifications}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, emailNotifications: checked }))}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Push Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive browser notifications
-                  </p>
-                </div>
-                <Switch 
-                  checked={notifications.pushNotifications}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, pushNotifications: checked }))}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Comment Replies</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notify when someone replies to your comments
-                  </p>
-                </div>
-                <Switch 
-                  checked={notifications.commentReplies}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, commentReplies: checked }))}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Blog Likes</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notify when someone likes your blog posts
-                  </p>
-                </div>
-                <Switch 
-                  checked={notifications.blogLikes}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, blogLikes: checked }))}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>New Followers</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notify when someone follows you
-                  </p>
-                </div>
-                <Switch 
-                  checked={notifications.newFollowers}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, newFollowers: checked }))}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Privacy & Security */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Privacy & Security
-              </CardTitle>
-              <CardDescription>
-                Manage your privacy settings and account security
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Profile Visibility</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Make your profile public or private
-                  </p>
-                </div>
-                <Select 
-                  value={privacy.profileVisibility}
-                  onValueChange={(value: 'public' | 'private') => setPrivacy(prev => ({ ...prev, profileVisibility: value }))}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="public">Public</SelectItem>
-                    <SelectItem value="private">Private</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Show Email</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Display email on your profile
-                  </p>
-                </div>
-                <Switch 
-                  checked={privacy.showEmail}
-                  onCheckedChange={(checked) => setPrivacy(prev => ({ ...prev, showEmail: checked }))}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Show Location</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Display location on your profile
-                  </p>
-                </div>
-                <Switch 
-                  checked={privacy.showLocation}
-                  onCheckedChange={(checked) => setPrivacy(prev => ({ ...prev, showLocation: checked }))}
-                />
-              </div>
-              
-              <Separator />
-              
-              {/* Change Password Dialog */}
-              <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full">
-                    Change Password
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Change Password</DialogTitle>
-                    <DialogDescription>
-                      Enter your current password and choose a new one.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="currentPassword">Current Password</Label>
-                      <Input 
-                        id="currentPassword"
-                        type="password"
-                        value={passwordForm.currentPassword}
-                        onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="newPassword">New Password</Label>
-                      <Input 
-                        id="newPassword"
-                        type="password"
-                        value={passwordForm.newPassword}
-                        onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                      <Input 
-                        id="confirmPassword"
-                        type="password"
-                        value={passwordForm.confirmPassword}
-                        onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowPasswordDialog(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      onClick={handlePasswordChange}
-                      disabled={isLoading || !passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword}
-                    >
-                      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Change Password'}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              
-              {/* Delete Account Dialog */}
-              <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full text-red-600 hover:text-red-700">
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Delete Account
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle className="text-red-600">Delete Account</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="deleteConfirmation">
-                        Type <strong>DELETE</strong> to confirm
-                      </Label>
-                      <Input 
-                        id="deleteConfirmation"
-                        value={deleteConfirmation}
-                        onChange={(e) => setDeleteConfirmation(e.target.value)}
-                        placeholder="DELETE"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setShowDeleteDialog(false);
-                        setDeleteConfirmation('');
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      variant="destructive"
-                      onClick={handleDeleteAccount}
-                      disabled={isLoading || deleteConfirmation !== 'DELETE'}
-                    >
-                      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete Account'}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
             </CardContent>
           </Card>
         </div>

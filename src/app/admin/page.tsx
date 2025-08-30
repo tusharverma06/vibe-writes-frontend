@@ -46,6 +46,7 @@ export default function AdminDashboard() {
   const [pendingBlogs, setPendingBlogs] = useState<Blog[]>([]);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
@@ -59,13 +60,9 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (user?.role !== 'admin') {
-      router.push('/');
-      return;
-    }
+    
 
     loadDashboardData();
-    loadAllBlogs(); // Load all blogs for management
   }, [isAuthenticated, user, router]);
 
   useEffect(() => {
@@ -73,6 +70,13 @@ export default function AdminDashboard() {
       loadAllBlogs(); // Reload blogs when filter changes
     }
   }, [blogFilter, isAuthenticated, user]);
+
+  // Load all blogs when manage tab is first accessed
+  const handleManageTabChange = (value: string) => {
+    if (value === 'manage' && allBlogs.length === 0) {
+      loadAllBlogs();
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -82,12 +86,19 @@ export default function AdminDashboard() {
         apiService.getPendingBlogs(1, 50)
       ]);
 
+      // Validate stats response structure
+      if (!statsResponse?.stats) {
+        throw new Error('Invalid stats response structure');
+      }
+
       setStats(statsResponse.stats);
-      setPendingBlogs(pendingResponse.blogs);
+      setPendingBlogs(pendingResponse?.blogs || []);
       
-      // Load recent activity from stats
-      const activity = [
-        ...statsResponse.stats.recentActivity.blogs.map((blog: any) => ({
+      // Load recent activity from stats with proper null checks
+      const activity = [];
+      
+      if (statsResponse.stats.recentActivity?.blogs?.length > 0) {
+        activity.push(...statsResponse.stats.recentActivity.blogs.map((blog: any) => ({
           id: `blog-${blog._id}`,
           user: {
             name: `${blog.author.firstName} ${blog.author.lastName}`,
@@ -96,8 +107,11 @@ export default function AdminDashboard() {
           action: `submitted "${blog.title}" for review`,
           timestamp: new Date(blog.createdAt).toLocaleDateString(),
           type: 'blog'
-        })),
-        ...statsResponse.stats.recentActivity.users.map((user: any) => ({
+        })));
+      }
+      
+      if (statsResponse.stats.recentActivity?.users?.length > 0) {
+        activity.push(...statsResponse.stats.recentActivity.users.map((user: any) => ({
           id: `user-${user._id}`,
           user: {
             name: `${user.firstName} ${user.lastName}`,
@@ -106,14 +120,26 @@ export default function AdminDashboard() {
           action: 'joined the platform',
           timestamp: new Date(user.createdAt).toLocaleDateString(),
           type: 'user'
-        }))
-      ].slice(0, 10);
+        })));
+      }
       
-      setRecentActivity(activity);
+      setRecentActivity(activity.slice(0, 10));
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
-      setError('Failed to load dashboard data');
-      toast.error('Failed to load dashboard data');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load dashboard data';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      
+      // Set fallback data to prevent complete failure
+      setStats({
+        blogs: { total: 0, published: 0, pending: 0, rejected: 0 },
+        users: { total: 0 },
+        comments: { total: 0 },
+        recentActivity: { blogs: [], users: [] },
+        analytics: { blogsByCategory: [], monthlyStats: [] }
+      });
+      setPendingBlogs([]);
+      setRecentActivity([]);
     } finally {
       setIsLoading(false);
     }
@@ -176,14 +202,23 @@ export default function AdminDashboard() {
 
   const loadAllBlogs = async () => {
     try {
-      setIsLoading(true);
+      setIsLoadingBlogs(true);
+      setError(null);
       const response = await apiService.getAllBlogs(blogFilter);
+      
+      if (!response?.blogs) {
+        throw new Error('Invalid response structure from blogs API');
+      }
+      
       setAllBlogs(response.blogs);
     } catch (error) {
       console.error('Failed to load all blogs:', error);
-      toast.error('Failed to load all blogs');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load all blogs';
+      toast.error(errorMessage);
+      setError(errorMessage);
+      setAllBlogs([]); // Set empty array on error
     } finally {
-      setIsLoading(false);
+      setIsLoadingBlogs(false);
     }
   };
 
@@ -219,17 +254,35 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!isAuthenticated || user?.role !== 'admin') {
+  // Show loading while checking authentication
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user is admin
+  if (user?.role !== 'admin') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
           <p className="text-muted-foreground mb-4">
-            You don't have permission to access the admin dashboard.
+            You don't have permission to access the admin dashboard. Admin role required.
           </p>
-          <Button onClick={() => router.push('/')}>
-            Go to Home
-          </Button>
+          <div className="flex gap-2 justify-center">
+            <Button onClick={() => router.push('/')} variant="outline">
+              Go to Home
+            </Button>
+            <Button onClick={() => router.push('/login')}>
+              Login as Admin
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -339,7 +392,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="pending" className="space-y-6">
+        <Tabs defaultValue="pending" className="space-y-6" onValueChange={handleManageTabChange}>
           <TabsList>
             <TabsTrigger value="pending">Pending Approvals</TabsTrigger>
             <TabsTrigger value="activity">Recent Activity</TabsTrigger>
@@ -490,17 +543,22 @@ export default function AdminDashboard() {
                     <Button 
                       variant="outline" 
                       onClick={() => loadAllBlogs()}
-                      disabled={isLoading}
+                      disabled={isLoadingBlogs}
                       className="gap-2"
                     >
-                      <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                      <RefreshCw className={`h-4 w-4 ${isLoadingBlogs ? 'animate-spin' : ''}`} />
                       Refresh
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                {allBlogs.length === 0 ? (
+                {isLoadingBlogs ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p>Loading blogs...</p>
+                  </div>
+                ) : allBlogs.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No blogs found</p>
@@ -662,7 +720,7 @@ export default function AdminDashboard() {
                   <CardTitle>Blogs by Category</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {stats?.analytics.blogsByCategory && stats.analytics.blogsByCategory.length > 0 ? (
+                  {stats?.analytics?.blogsByCategory && stats.analytics.blogsByCategory.length > 0 ? (
                     <div className="space-y-3">
                       {stats.analytics.blogsByCategory.map((category) => (
                         <div key={category._id} className="flex items-center justify-between">
@@ -697,7 +755,7 @@ export default function AdminDashboard() {
                   <CardTitle>Monthly Blog Growth</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {stats?.analytics.monthlyStats && stats.analytics.monthlyStats.length > 0 ? (
+                  {stats?.analytics?.monthlyStats && stats.analytics.monthlyStats.length > 0 ? (
                     <div className="space-y-3">
                       {stats.analytics.monthlyStats.slice(-6).map((month) => (
                         <div key={`${month._id.year}-${month._id.month}`} className="flex items-center justify-between">
