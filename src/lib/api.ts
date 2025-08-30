@@ -26,8 +26,8 @@ class ApiService {
 
   constructor(baseURL = '/api') {
     this.baseURL = process.env.NODE_ENV === 'production' 
-      ? 'https://your-domain.com/api' 
-      : 'http://localhost:5000/api';
+      ? 'https://vibe-writes-backend.onrender.com/api' 
+      : 'https://vibe-writes-backend.onrender.com/api';
     this.token = null;
     
     // Initialize token from localStorage if available

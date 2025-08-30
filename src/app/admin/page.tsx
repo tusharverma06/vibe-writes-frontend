@@ -60,8 +60,6 @@ export default function AdminDashboard() {
       return;
     }
 
-    
-
     loadDashboardData();
   }, [isAuthenticated, user, router]);
 
