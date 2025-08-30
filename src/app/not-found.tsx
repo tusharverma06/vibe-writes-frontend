@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Home, ArrowLeft, Search } from 'lucide-react';
-
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 dark:from-slate-900 dark:via-purple-900/20 dark:to-slate-900 p-4">
@@ -27,11 +26,6 @@ export default function NotFound() {
               <Search className="mr-2 h-4 w-4" />
               Browse Blogs
             </Link>
-          </Button>
-
-          <Button variant="ghost" onClick={() => window.history.back()} className="w-full">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Go Back
           </Button>
         </div>
       </div>
