@@ -1,0 +1,1448 @@
+# Devnovate Blog Platform - shadcn/ui Design Guide
+
+## Design Philosophy & Visual Identity
+
+### Modern Aesthetic Principles
+- **Glassmorphism**: Subtle transparency effects with backdrop blur
+- **Neumorphism Elements**: Soft shadows and subtle depth
+- **Dark Mode First**: Beautiful dark theme with light mode support
+- **Micro-Animations**: Smooth transitions and hover effects
+- **Typography Hierarchy**: Clear content hierarchy with beautiful fonts
+- **Gradient Accents**: Subtle gradients for visual interest
+
+### Color Palette
+```css
+/* Primary Brand Colors */
+--primary: 262 83% 58%;      /* Purple-blue gradient base */
+--primary-foreground: 210 40% 98%;
+--secondary: 220 14% 96%;
+--secondary-foreground: 220 9% 46%;
+
+/* Accent Colors for Engagement */
+--accent-purple: 262 83% 58%;
+--accent-blue: 212 100% 48%;
+--accent-green: 142 76% 36%;
+--accent-orange: 25 95% 53%;
+
+/* Semantic Colors */
+--success: 142 76% 36%;
+--warning: 38 92% 50%;
+--destructive: 0 84% 60%;
+--info: 212 100% 48%;
+```
+
+## Component Architecture & shadcn/ui Setup
+
+### Essential shadcn/ui Components
+```bash
+# Core UI Components
+npx shadcn-ui@latest add button
+npx shadcn-ui@latest add card
+npx shadcn-ui@latest add input
+npx shadcn-ui@latest add label
+npx shadcn-ui@latest add textarea
+npx shadcn-ui@latest add badge
+npx shadcn-ui@latest add avatar
+npx shadcn-ui@latest add dropdown-menu
+npx shadcn-ui@latest add navigation-menu
+npx shadcn-ui@latest add separator
+npx shadcn-ui@latest add skeleton
+npx shadcn-ui@latest add toast
+npx shadcn-ui@latest add alert-dialog
+npx shadcn-ui@latest add dialog
+npx shadcn-ui@latest add sheet
+npx shadcn-ui@latest add tabs
+npx shadcn-ui@latest add accordion
+npx shadcn-ui@latest add command
+npx shadcn-ui@latest add popover
+npx shadcn-ui@latest add select
+npx shadcn-ui@latest add switch
+npx shadcn-ui@latest add checkbox
+npx shadcn-ui@latest add progress
+npx shadcn-ui@latest add table
+npx shadcn-ui@latest add form
+```
+
+### Custom Theme Configuration
+```javascript
+// tailwind.config.js
+module.exports = {
+  darkMode: ["class"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        // Custom blog-specific colors
+        blog: {
+          purple: "hsl(262 83% 58%)",
+          blue: "hsl(212 100% 48%)",
+          green: "hsl(142 76% 36%)",
+          orange: "hsl(25 95% 53%)",
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        heading: ['Cal Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
+        mono: ['JetBrains Mono', 'ui-monospace'],
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fadeIn 0.5s ease-in-out",
+        "slide-up": "slideUp 0.3s ease-out",
+        "scale-in": "scaleIn 0.2s ease-out",
+        "shimmer": "shimmer 2s linear infinite",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
+        fadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(10px)", opacity: 0 },
+          "100%": { transform: "translateY(0)", opacity: 1 },
+        },
+        scaleIn: {
+          "0%": { transform: "scale(0.95)", opacity: 0 },
+          "100%": { transform: "scale(1)", opacity: 1 },
+        },
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+}
+```
+
+## Page-by-Page Design Specifications
+
+### 1. Homepage Design
+```jsx
+// Modern Hero Section with Gradient Background
+const HeroSection = () => (
+  <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-3xl" />
+    <div className="relative container py-24 md:py-32">
+      <div className="mx-auto max-w-4xl text-center">
+        <h1 className="bg-gradient-to-br from-white to-slate-300 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-6xl md:text-7xl">
+          Stories that inspire innovation
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+          Discover cutting-edge insights from developers, designers, and tech innovators.
+        </p>
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <Button size="lg" className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600">
+            Start Reading
+          </Button>
+          <Button size="lg" variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
+            Write Your Story
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+)
+
+// Featured Posts Grid with Glassmorphism Cards
+const FeaturedPosts = () => (
+  <section className="py-16">
+    <div className="container">
+      <div className="mb-12 text-center">
+        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Featured Stories</h2>
+        <p className="mt-4 text-lg text-muted-foreground">
+          Handpicked articles from our community
+        </p>
+      </div>
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Glassmorphism Blog Cards */}
+        <Card className="group overflow-hidden border-0 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md transition-all hover:shadow-2xl hover:shadow-purple-500/25 dark:from-slate-900/80 dark:to-slate-800/40">
+          <div className="aspect-[16/9] overflow-hidden">
+            <img 
+              src="/blog-cover.jpg" 
+              alt="Blog cover"
+              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            />
+          </div>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                Technology
+              </Badge>
+              <span className="text-sm text-muted-foreground">5 min read</span>
+            </div>
+            <h3 className="font-bold text-xl mb-2 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              The Future of Web Development
+            </h3>
+            <p className="text-muted-foreground line-clamp-3 mb-4">
+              Exploring the latest trends and technologies shaping the future...
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <img src="/avatar.jpg" alt="Author" />
+                </Avatar>
+                <span className="text-sm font-medium">John Doe</span>
+              </div>
+              <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700">
+                Read more →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  </section>
+)
+```
+
+### 2. Blog Listing Page
+```jsx
+// Advanced Filter Sidebar with shadcn components
+const FilterSidebar = () => (
+  <aside className="space-y-6">
+    <Card className="p-6">
+      <h3 className="font-semibold mb-4">Search</h3>
+      <div className="relative">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input placeholder="Search articles..." className="pl-9" />
+      </div>
+    </Card>
+
+    <Card className="p-6">
+      <h3 className="font-semibold mb-4">Categories</h3>
+      <div className="space-y-2">
+        {categories.map((category) => (
+          <div key={category.id} className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox id={category.id} />
+              <label htmlFor={category.id} className="text-sm font-medium">
+                {category.name}
+              </label>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {category.count}
+            </Badge>
+          </div>
+        ))}
+      </div>
+    </Card>
+
+    <Card className="p-6">
+      <h3 className="font-semibold mb-4">Popular Tags</h3>
+      <div className="flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <Badge 
+            key={tag} 
+            variant="outline" 
+            className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+          >
+            {tag}
+          </Badge>
+        ))}
+      </div>
+    </Card>
+  </aside>
+)
+
+// Blog List with Infinite Scroll
+const BlogList = () => (
+  <div className="space-y-6">
+    {blogs.map((blog) => (
+      <Card key={blog.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="md:flex">
+          <div className="md:w-1/3">
+            <div className="aspect-[16/9] overflow-hidden">
+              <img 
+                src={blog.coverImage} 
+                alt={blog.title}
+                className="h-full w-full object-cover transition-transform hover:scale-105"
+              />
+            </div>
+          </div>
+          <CardContent className="flex-1 p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Badge variant="secondary">{blog.category}</Badge>
+              <span className="text-sm text-muted-foreground">
+                {blog.readTime} min read
+              </span>
+              <Separator orientation="vertical" className="h-4" />
+              <span className="text-sm text-muted-foreground">
+                {blog.publishedAt}
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold mb-2 hover:text-primary transition-colors cursor-pointer">
+              {blog.title}
+            </h2>
+            <p className="text-muted-foreground mb-4 line-clamp-2">
+              {blog.excerpt}
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <img src={blog.author.avatar} alt={blog.author.name} />
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{blog.author.name}</p>
+                  <p className="text-xs text-muted-foreground">@{blog.author.username}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Heart className="h-4 w-4" />
+                  {blog.likes}
+                </div>
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="h-4 w-4" />
+                  {blog.comments}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Eye className="h-4 w-4" />
+                  {blog.views}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </div>
+      </Card>
+    ))}
+  </div>
+)
+```
+
+### 3. Blog Reading Page
+```jsx
+// Immersive Blog Reading Experience
+const BlogReader = () => (
+  <article className="mx-auto max-w-4xl">
+    {/* Hero Header */}
+    <header className="relative mb-12">
+      <div className="aspect-[21/9] overflow-hidden rounded-2xl">
+        <img 
+          src={blog.coverImage} 
+          alt={blog.title}
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      </div>
+      <div className="absolute bottom-6 left-6 right-6 text-white">
+        <div className="flex items-center gap-2 mb-4">
+          {blog.tags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="bg-white/20 backdrop-blur-sm">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          {blog.title}
+        </h1>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-10 w-10 border-2 border-white/20">
+              <img src={blog.author.avatar} alt={blog.author.name} />
+            </Avatar>
+            <div>
+              <p className="font-medium">{blog.author.name}</p>
+              <p className="text-sm opacity-80">@{blog.author.username}</p>
+            </div>
+          </div>
+          <Separator orientation="vertical" className="h-8 bg-white/20" />
+          <div className="text-sm">
+            <p>{blog.publishedAt}</p>
+            <p>{blog.readTime} min read</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {/* Interactive Toolbar */}
+    <div className="sticky top-4 z-50 mb-8">
+      <Card className="inline-flex items-center gap-2 p-2 bg-background/80 backdrop-blur-sm border-0 shadow-lg">
+        <Button size="sm" variant="ghost" className="gap-2">
+          <Heart className="h-4 w-4" />
+          {blog.likes}
+        </Button>
+        <Button size="sm" variant="ghost" className="gap-2">
+          <MessageCircle className="h-4 w-4" />
+          {blog.comments}
+        </Button>
+        <Button size="sm" variant="ghost" className="gap-2">
+          <Share className="h-4 w-4" />
+          Share
+        </Button>
+        <Button size="sm" variant="ghost" className="gap-2">
+          <Bookmark className="h-4 w-4" />
+          Save
+        </Button>
+        <Separator orientation="vertical" className="h-6" />
+        <Button size="sm" variant="ghost">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </Card>
+    </div>
+
+    {/* Typography-rich Content */}
+    <div className="prose prose-lg dark:prose-invert max-w-none">
+      {/* Content rendered with @tailwindcss/typography */}
+      <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+    </div>
+
+    {/* Author Bio Card */}
+    <Card className="mt-12 p-6">
+      <div className="flex items-start gap-4">
+        <Avatar className="h-16 w-16">
+          <img src={blog.author.avatar} alt={blog.author.name} />
+        </Avatar>
+        <div className="flex-1">
+          <h3 className="text-xl font-bold mb-2">{blog.author.name}</h3>
+          <p className="text-muted-foreground mb-4">{blog.author.bio}</p>
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm">Follow</Button>
+            <div className="text-sm text-muted-foreground">
+              {blog.author.followers} followers
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  </article>
+)
+```
+
+### 4. Blog Editor (Rich Text Editor)
+```jsx
+// Advanced Blog Editor with shadcn components
+const BlogEditor = () => (
+  <div className="mx-auto max-w-6xl">
+    <div className="grid gap-6 lg:grid-cols-4">
+      {/* Main Editor */}
+      <div className="lg:col-span-3 space-y-6">
+        <Card className="p-6">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="title">Title</Label>
+              <Input 
+                id="title"
+                placeholder="Enter your blog title..."
+                className="text-2xl font-bold border-0 px-0 focus-visible:ring-0"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="excerpt">Excerpt</Label>
+              <Textarea 
+                id="excerpt"
+                placeholder="Write a compelling excerpt..."
+                className="resize-none"
+                rows={3}
+              />
+            </div>
+
+            <Separator />
+
+            {/* Rich Text Editor Toolbar */}
+            <div className="border rounded-lg">
+              <div className="flex items-center gap-1 p-2 border-b">
+                <Button size="sm" variant="ghost"><Bold className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Italic className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Underline className="h-4 w-4" /></Button>
+                <Separator orientation="vertical" className="h-6" />
+                <Button size="sm" variant="ghost"><Heading1 className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Heading2 className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Heading3 className="h-4 w-4" /></Button>
+                <Separator orientation="vertical" className="h-6" />
+                <Button size="sm" variant="ghost"><List className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><ListOrdered className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Quote className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Code className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Image className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost"><Link className="h-4 w-4" /></Button>
+              </div>
+              <Textarea 
+                placeholder="Start writing your story..."
+                className="min-h-[400px] border-0 focus-visible:ring-0"
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Sidebar */}
+      <div className="space-y-6">
+        <Card className="p-6">
+          <h3 className="font-semibold mb-4">Publish Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="pending">Submit for Review</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="category">Category</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="technology">Technology</SelectItem>
+                  <SelectItem value="design">Design</SelectItem>
+                  <SelectItem value="development">Development</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="tags">Tags</Label>
+              <Input placeholder="Add tags..." />
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button className="flex-1">Save Draft</Button>
+              <Button variant="outline">Preview</Button>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="font-semibold mb-4">Cover Image</h3>
+          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+            <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-sm text-muted-foreground mb-2">
+              Drag & drop an image or click to browse
+            </p>
+            <Button variant="outline" size="sm">Choose File</Button>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="font-semibold mb-4">SEO Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="meta-title">Meta Title</Label>
+              <Input id="meta-title" placeholder="SEO title..." />
+            </div>
+            <div>
+              <Label htmlFor="meta-description">Meta Description</Label>
+              <Textarea 
+                id="meta-description" 
+                placeholder="SEO description..."
+                rows={3}
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  </div>
+)
+```
+
+### 5. Admin Dashboard
+```jsx
+// Modern Admin Dashboard with Data Visualization
+const AdminDashboard = () => (
+  <div className="space-y-8">
+    {/* Stats Overview */}
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {stats.map((stat) => (
+        <Card key={stat.title} className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </p>
+              <p className="text-3xl font-bold">{stat.value}</p>
+            </div>
+            <div className={`p-3 rounded-full ${stat.color}`}>
+              <stat.icon className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center">
+            <span className={`text-sm ${stat.trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {stat.trend > 0 ? '↗' : '↘'} {Math.abs(stat.trend)}%
+            </span>
+            <span className="text-sm text-muted-foreground ml-2">
+              from last month
+            </span>
+          </div>
+        </Card>
+      ))}
+    </div>
+
+    {/* Content Management Tables */}
+    <div className="grid gap-6 lg:grid-cols-2">
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Pending Approvals</h3>
+          <Badge variant="secondary">{pendingBlogs.length}</Badge>
+        </div>
+        <div className="space-y-4">
+          {pendingBlogs.map((blog) => (
+            <div key={blog.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="flex-1">
+                <h4 className="font-medium line-clamp-1">{blog.title}</h4>
+                <p className="text-sm text-muted-foreground">
+                  by {blog.author} • {blog.submittedAt}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline">
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button size="sm" variant="destructive">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Recent Activity</h3>
+          <Button variant="outline" size="sm">View All</Button>
+        </div>
+        <div className="space-y-4">
+          {recentActivity.map((activity) => (
+            <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50">
+              <Avatar className="h-8 w-8">
+                <img src={activity.user.avatar} alt={activity.user.name} />
+              </Avatar>
+              <div className="flex-1">
+                <p className="text-sm">
+                  <span className="font-medium">{activity.user.name}</span>
+                  {' '}{activity.action}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {activity.timestamp}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  </div>
+)
+```
+
+## Animation & Interaction Patterns
+
+### Micro-Animations
+```jsx
+// Hover effects and transitions
+const AnimatedCard = ({ children, className, ...props }) => (
+  <Card 
+    className={cn(
+      "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
+      "hover:shadow-primary/25 group",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </Card>
+)
+
+// Loading skeletons
+const BlogCardSkeleton = () => (
+  <Card className="p-6">
+    <div className="space-y-4">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-20 w-full" />
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-8 w-8 rounded-full" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+    </div>
+  </Card>
+)
+
+// Staggered animations for lists
+const StaggeredList = ({ children }) => (
+  <div className="space-y-4">
+    {children.map((child, index) => (
+      <div 
+        key={index}
+        className="animate-fade-in"
+        style={{ animationDelay: `${index * 100}ms` }}
+      >
+        {child}
+      </div>
+    ))}
+  </div>
+)
+```
+
+### Interactive Elements
+```jsx
+// Enhanced like button with animation
+const LikeButton = ({ isLiked, count, onToggle }) => (
+  <Button
+    variant="ghost"
+    size="sm"
+    onClick={onToggle}
+    className={cn(
+      "group transition-all duration-200",
+      isLiked && "text-red-500"
+    )}
+  >
+    <Heart 
+      className={cn(
+        "h-4 w-4 mr-1 transition-all duration-200",
+        isLiked ? "fill-current scale-110" : "group-hover:scale-110"
+      )}
+    />
+    {count}
+  </Button>
+)
+
+// Floating Action Button for blog creation
+const FloatingWriteButton = () => (
+  <Button
+    size="lg"
+    className={cn(
+      "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl",
+      "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600",
+      "transition-all duration-300 hover:scale-110 hover:shadow-2xl z-50"
+    )}
+  >
+    <Plus className="h-6 w-6" />
+  </Button>
+)
+```
+
+## Advanced UI Patterns
+
+### Search with Command Palette
+```jsx
+// Global search with shadcn Command component
+const GlobalSearch = () => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="relative w-full justify-start text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64">
+          <Search className="mr-2 h-4 w-4" />
+          Search blogs...
+          <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+            <span className="text-xs">⌘</span>K
+          </kbd>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="overflow-hidden p-0">
+        <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground">
+          <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+            <CommandInput placeholder="Search blogs, authors, topics..." />
+          </div>
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Recent Blogs">
+              {recentBlogs.map((blog) => (
+                <CommandItem key={blog.id} className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <div className="flex-1">
+                    <div className="font-medium">{blog.title}</div>
+                    <div className="text-sm text-muted-foreground">by {blog.author}</div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandGroup heading="Categories">
+              {categories.map((category) => (
+                <CommandItem key={category.id} className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  {category.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandGroup heading="Authors">
+              {authors.map((author) => (
+                <CommandItem key={author.id} className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {author.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
+  )
+}
+```
+
+### Advanced Data Tables for Admin
+```jsx
+// Enhanced data table with sorting, filtering, and actions
+const BlogManagementTable = () => {
+  const [sorting, setSorting] = useState([])
+  const [columnFilters, setColumnFilters] = useState([])
+
+  const columns = [
+    {
+      accessorKey: "title",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-8 px-2"
+        >
+          Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <img 
+            src={row.original.coverImage} 
+            alt="" 
+            className="h-10 w-10 rounded object-cover"
+          />
+          <div>
+            <div className="font-medium line-clamp-1">{row.getValue("title")}</div>
+            <div className="text-sm text-muted-foreground">
+              {row.original.category}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "author",
+      header: "Author",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Avatar className="h-8 w-8">
+            <img src={row.original.author.avatar} alt={row.original.author.name} />
+          </Avatar>
+          <div>
+            <div className="font-medium">{row.original.author.name}</div>
+            <div className="text-sm text-muted-foreground">
+              @{row.original.author.username}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status")
+        const statusConfig = {
+          published: { color: "bg-green-100 text-green-800", icon: CheckCircle },
+          pending: { color: "bg-yellow-100 text-yellow-800", icon: Clock },
+          rejected: { color: "bg-red-100 text-red-800", icon: XCircle },
+          hidden: { color: "bg-gray-100 text-gray-800", icon: EyeOff },
+        }
+        const config = statusConfig[status]
+        const Icon = config.icon
+
+        return (
+          <Badge className={`${config.color} flex items-center gap-1`}>
+            <Icon className="h-3 w-3" />
+            {status}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "metrics",
+      header: "Engagement",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-1">
+            <Eye className="h-4 w-4 text-muted-foreground" />
+            {row.original.views}
+          </div>
+          <div className="flex items-center gap-1">
+            <Heart className="h-4 w-4 text-muted-foreground" />
+            {row.original.likes}
+          </div>
+          <div className="flex items-center gap-1">
+            <MessageCircle className="h-4 w-4 text-muted-foreground" />
+            {row.original.comments}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <Eye className="mr-2 h-4 w-4" />
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {row.original.status === 'pending' && (
+              <>
+                <DropdownMenuItem className="text-green-600">
+                  <Check className="mr-2 h-4 w-4" />
+                  Approve
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600">
+                  <X className="mr-2 h-4 w-4" />
+                  Reject
+                </DropdownMenuItem>
+              </>
+            )}
+            {row.original.status === 'published' && (
+              <DropdownMenuItem>
+                <EyeOff className="mr-2 h-4 w-4" />
+                Hide
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-red-600">
+              <Trash className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold">Blog Management</h3>
+          <p className="text-sm text-muted-foreground">
+            Manage all blog posts and their approval status
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder="Filter blogs..."
+            className="max-w-sm"
+            value={(table.getColumn("title")?.getFilterValue() ?? "")}
+            onChange={(event) =>
+              table.getColumn("title")?.setFilterValue(event.target.value)
+            }
+          />
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="hidden">Hidden</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
+      <DataTable
+        columns={columns}
+        data={blogs}
+        sorting={sorting}
+        setSorting={setSorting}
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilters}
+      />
+    </Card>
+  )
+}
+```
+
+### Notification System
+```jsx
+// Toast notification system with different variants
+const NotificationSystem = () => {
+  const { toast } = useToast()
+
+  const notifications = {
+    success: (message) => toast({
+      title: "Success!",
+      description: message,
+      className: "border-green-200 bg-green-50 text-green-900",
+    }),
+    error: (message) => toast({
+      title: "Error!",
+      description: message,
+      variant: "destructive",
+    }),
+    info: (message) => toast({
+      title: "Info",
+      description: message,
+      className: "border-blue-200 bg-blue-50 text-blue-900",
+    }),
+    warning: (message) => toast({
+      title: "Warning",
+      description: message,
+      className: "border-yellow-200 bg-yellow-50 text-yellow-900",
+    }),
+  }
+
+  return notifications
+}
+
+// In-app notification bell with dropdown
+const NotificationDropdown = () => {
+  const [notifications, setNotifications] = useState([])
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">
+              {unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-80">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="font-semibold">Notifications</h3>
+          <Button variant="ghost" size="sm">
+            Mark all as read
+          </Button>
+        </div>
+        <div className="max-h-64 overflow-y-auto">
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={cn(
+                  "p-4 border-b last:border-b-0 cursor-pointer hover:bg-muted/50",
+                  !notification.read && "bg-blue-50/50"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{notification.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {notification.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {notification.timestamp}
+                    </p>
+                  </div>
+                  {!notification.read && (
+                    <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="p-8 text-center text-muted-foreground">
+              <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p>No notifications yet</p>
+            </div>
+          )}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+```
+
+## Mobile-First Responsive Design
+
+### Navigation Components
+```jsx
+// Responsive navigation with mobile drawer
+const ResponsiveNavigation = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <>
+      {/* Desktop Navigation */}
+      <nav className="hidden lg:block">
+        <div className="flex items-center space-x-8">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid gap-3 p-6 w-[400px]">
+                    {categories.map((category) => (
+                      <NavigationMenuLink key={category.id} asChild>
+                        <a className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">
+                            {category.name}
+                          </div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {category.description}
+                          </p>
+                        </a>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild className="lg:hidden">
+          <Button variant="ghost" size="icon">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-80">
+          <div className="flex flex-col h-full">
+            <div className="flex-1 overflow-y-auto">
+              <nav className="space-y-2 py-4">
+                <a href="/" className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg hover:bg-muted">
+                  <Home className="h-4 w-4" />
+                  Home
+                </a>
+                <a href="/trending" className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg hover:bg-muted">
+                  <TrendingUp className="h-4 w-4" />
+                  Trending
+                </a>
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="categories">
+                    <AccordionTrigger className="px-4 text-sm font-medium">
+                      Categories
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4">
+                      <div className="space-y-2">
+                        {categories.map((category) => (
+                          <a
+                            key={category.id}
+                            href={`/category/${category.slug}`}
+                            className="block px-2 py-1 text-sm text-muted-foreground hover:text-foreground rounded"
+                          >
+                            {category.name}
+                          </a>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </nav>
+            </div>
+            
+            <div className="border-t p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Avatar className="h-8 w-8">
+                  <img src={user.avatar} alt={user.name} />
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{user.name}</p>
+                  <p className="text-xs text-muted-foreground">@{user.username}</p>
+                </div>
+              </div>
+              <Button className="w-full" size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Write Article
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
+  )
+}
+```
+
+### Mobile-Optimized Components
+```jsx
+// Mobile-first blog card design
+const MobileBlogCard = ({ blog }) => (
+  <Card className="overflow-hidden">
+    <div className="aspect-video overflow-hidden">
+      <img 
+        src={blog.coverImage} 
+        alt={blog.title}
+        className="h-full w-full object-cover transition-transform hover:scale-105"
+      />
+    </div>
+    <CardContent className="p-4">
+      <div className="flex items-center gap-2 mb-2">
+        <Badge variant="secondary" className="text-xs">
+          {blog.category}
+        </Badge>
+        <span className="text-xs text-muted-foreground">
+          {blog.readTime} min read
+        </span>
+      </div>
+      
+      <h3 className="font-bold text-lg mb-2 line-clamp-2 leading-tight">
+        {blog.title}
+      </h3>
+      
+      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+        {blog.excerpt}
+      </p>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Avatar className="h-6 w-6">
+            <img src={blog.author.avatar} alt={blog.author.name} />
+          </Avatar>
+          <span className="text-xs font-medium">{blog.author.name}</span>
+        </div>
+        
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Heart className="h-3 w-3" />
+            {blog.likes}
+          </div>
+          <div className="flex items-center gap-1">
+            <MessageCircle className="h-3 w-3" />
+            {blog.comments}
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+)
+
+// Touch-friendly interaction elements
+const TouchOptimizedControls = () => (
+  <div className="flex items-center gap-4 p-4 border-t bg-background/95 backdrop-blur-sm">
+    <Button size="sm" variant="ghost" className="h-10 px-3 touch-manipulation">
+      <Heart className="h-5 w-5 mr-2" />
+      Like
+    </Button>
+    <Button size="sm" variant="ghost" className="h-10 px-3 touch-manipulation">
+      <MessageCircle className="h-5 w-5 mr-2" />
+      Comment
+    </Button>
+    <Button size="sm" variant="ghost" className="h-10 px-3 touch-manipulation">
+      <Share className="h-5 w-5 mr-2" />
+      Share
+    </Button>
+    <Button size="sm" variant="ghost" className="ml-auto h-10 px-3 touch-manipulation">
+      <Bookmark className="h-5 w-5" />
+    </Button>
+  </div>
+)
+```
+
+## Performance & Accessibility
+
+### Loading States
+```jsx
+// Sophisticated loading patterns
+const ContentSkeleton = () => (
+  <div className="space-y-6">
+    <div className="space-y-2">
+      <Skeleton className="h-8 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+    </div>
+    <Skeleton className="h-64 w-full" />
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+    </div>
+  </div>
+)
+
+// Progressive loading with intersection observer
+const LazyBlogCard = ({ blog }) => {
+  const [isVisible, setIsVisible] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const ref = useRef()
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div ref={ref} className="animate-fade-in">
+      {isVisible ? (
+        <BlogCard blog={blog} onLoad={() => setIsLoaded(true)} />
+      ) : (
+        <BlogCardSkeleton />
+      )}
+    </div>
+  )
+}
+```
+
+### Dark Mode Implementation
+```jsx
+// Smooth dark mode transitions
+const ThemeToggle = () => {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme("light")}>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
+          Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+          System
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+```
+
+## Implementation Tips
+
+### 1. **Component Organization**
+```
+src/
+├── components/
+│   ├── ui/              # shadcn/ui components
+│   ├── blog/            # Blog-specific components
+│   ├── admin/           # Admin components
+│   ├── layout/          # Layout components
+│   └── common/          # Shared components
+├── hooks/               # Custom hooks
+├── lib/                 # Utilities
+└── styles/              # Global styles
+```
+
+### 2. **Custom Hook Examples**
+```jsx
+// useDebounce for search
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
+
+// useInfiniteScroll for blog listing
+const useInfiniteScroll = (fetchMore, hasMore) => {
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop 
+          !== document.documentElement.offsetHeight || !hasMore) {
+        return
+      }
+      fetchMore()
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [fetchMore, hasMore])
+}
+```
+
+### 3. **Animation Library Integration**
+```jsx
+// Framer Motion integration with shadcn
+import { motion } from "framer-motion"
+
+const MotionCard = motion(Card)
+
+const AnimatedBlogGrid = ({ blogs }) => (
+  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {blogs.map((blog, index) => (
+      <MotionCard
+        key={blog.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1 }}
+        whileHover={{ y: -5, scale: 1.02 }}
+        className="cursor-pointer"
+      >
+        <BlogCard blog={blog} />
+      </MotionCard>
+    ))}
+  </div>
+)
+```
+
+This comprehensive design guide provides everything needed to create a visually stunning, modern blogging platform using shadcn/ui. The design emphasizes user experience, accessibility, and modern web standards while maintaining excellent performance across all devices.

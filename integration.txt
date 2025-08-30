@@ -1,0 +1,761 @@
+# Frontend Integration Guide
+
+## API Base URL
+```
+Development: http://localhost:5000/api
+Production: https://your-domain.com/api
+```
+
+## Authentication Headers
+```javascript
+// For authenticated requests
+headers: {
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${token}`
+}
+```
+
+## Data Types & Interfaces
+
+### User Data Types
+```typescript
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  fullName: string; // Virtual field
+  avatar: string | null;
+  role: 'user' | 'admin';
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  token: string;
+  user: User;
+}
+
+interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+}
+```
+
+### Blog Data Types
+```typescript
+interface Blog {
+  _id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage: string | null;
+  author: {
+    _id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+  };
+  status: 'draft' | 'pending' | 'published' | 'rejected' | 'hidden';
+  tags: string[];
+  category: string;
+  likes: string[]; // Array of user IDs
+  likeCount: number; // Virtual field
+  views: number;
+  isHidden: boolean;
+  rejectionReason?: string;
+  publishedAt: string | null;
+  readTime: number; // Minutes
+  createdAt: string;
+  updatedAt: string;
+  commentCount: number; // Virtual field populated separately
+}
+
+interface CreateBlogRequest {
+  title: string;
+  content: string;
+  category: string;
+  tags?: string[];
+  excerpt?: string;
+  coverImage?: string;
+  status?: 'draft' | 'pending';
+}
+
+interface BlogListResponse {
+  success: boolean;
+  count: number;
+  total: number;
+  pages: number;
+  currentPage: number;
+  blogs: Blog[];
+}
+
+interface BlogResponse {
+  success: boolean;
+  blog: Blog;
+}
+
+interface BlogQueryParams {
+  page?: number;
+  limit?: number;
+  category?: string;
+  tags?: string; // Comma-separated
+  search?: string;
+  sort?: 'newest' | 'oldest' | 'popular' | 'trending';
+}
+```
+
+### Comment Data Types
+```typescript
+interface Comment {
+  _id: string;
+  content: string;
+  author: {
+    _id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+  };
+  blog: string; // Blog ID
+  parentComment: string | null;
+  likes: string[]; // Array of user IDs
+  likeCount: number; // Virtual field
+  isHidden: boolean;
+  isEdited: boolean;
+  editedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  replies?: Comment[]; // Nested replies
+  replyCount: number; // Virtual field
+}
+
+interface CreateCommentRequest {
+  content: string;
+  parentComment?: string; // For replies
+}
+
+interface CommentListResponse {
+  success: boolean;
+  count: number;
+  total: number;
+  pages: number;
+  currentPage: number;
+  comments: Comment[];
+}
+```
+
+### Admin Data Types
+```typescript
+interface AdminStats {
+  blogs: {
+    total: number;
+    published: number;
+    pending: number;
+    rejected: number;
+  };
+  users: {
+    total: number;
+  };
+  comments: {
+    total: number;
+  };
+  recentActivity: {
+    blogs: Array<{
+      _id: string;
+      title: string;
+      status: string;
+      createdAt: string;
+      author: {
+        username: string;
+        firstName: string;
+        lastName: string;
+      };
+    }>;
+    users: Array<{
+      _id: string;
+      username: string;
+      firstName: string;
+      lastName: string;
+      createdAt: string;
+    }>;
+  };
+  analytics: {
+    blogsByCategory: Array<{
+      _id: string;
+      count: number;
+    }>;
+    monthlyStats: Array<{
+      _id: {
+        year: number;
+        month: number;
+      };
+      count: number;
+    }>;
+  };
+}
+
+interface UserWithStats extends User {
+  blogStats: {
+    total: number;
+    published: number;
+  };
+}
+
+interface RejectBlogRequest {
+  reason: string;
+}
+```
+
+### Stats Data Types
+```typescript
+interface StatsResponse {
+  success: boolean;
+  data: {
+    totalBlogs: number;
+    totalComments: number;
+    totalLikes: number;
+    totalViews: number;
+    breakdown: {
+      blogLikes: number;
+      commentLikes: number;
+    };
+  };
+}
+```
+
+## API Endpoints Reference
+
+### Authentication Endpoints
+
+#### POST /auth/register
+```javascript
+// Request
+const response = await fetch('/api/auth/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    username: 'johndoe',
+    email: 'john@example.com',
+    password: 'Password123',
+    firstName: 'John',
+    lastName: 'Doe'
+  })
+});
+
+// Response: AuthResponse
+```
+
+#### POST /auth/login
+```javascript
+// Request
+const response = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'john@example.com',
+    password: 'Password123'
+  })
+});
+
+// Response: AuthResponse
+```
+
+#### POST /auth/logout
+```javascript
+const response = await fetch('/api/auth/logout', {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+// Response: { success: true, message: string }
+```
+
+#### GET /auth/me
+```javascript
+const response = await fetch('/api/auth/me', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+// Response: { success: true, user: User }
+```
+
+#### PUT /auth/profile
+```javascript
+const response = await fetch('/api/auth/profile', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    firstName: 'John',
+    lastName: 'Smith'
+  })
+});
+
+// Response: { success: true, message: string, user: User }
+```
+
+### Blog Endpoints
+
+#### GET /blogs
+```javascript
+// With query parameters
+const params = new URLSearchParams({
+  page: '1',
+  limit: '10',
+  category: 'technology',
+  tags: 'javascript,react',
+  search: 'tutorial',
+  sort: 'newest'
+});
+
+const response = await fetch(`/api/blogs?${params}`);
+
+// Response: BlogListResponse
+```
+
+#### GET /blogs/trending
+```javascript
+// Get trending blogs with custom parameters
+const params = new URLSearchParams({
+  limit: '5',      // Number of blogs to return (default: 10)
+  days: '14'       // Time range in days (default: 7)
+});
+
+const response = await fetch(`/api/blogs/trending?${params}`);
+
+// Response: { success: true, count: number, blogs: Blog[] }
+// Blogs are sorted by trending score: (likes×2 + views + comments×3) / (days since published + 1)
+```
+
+#### GET /blogs/search
+```javascript
+const params = new URLSearchParams({
+  q: 'react tutorial',
+  page: '1',
+  limit: '10'
+});
+
+const response = await fetch(`/api/blogs/search?${params}`);
+
+// Response: BlogListResponse
+```
+
+#### GET /blogs/:slug
+```javascript
+const response = await fetch(`/api/blogs/${slug}`);
+
+// Response: BlogResponse
+```
+
+#### POST /blogs
+```javascript
+const response = await fetch('/api/blogs', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    title: 'My Blog Post',
+    content: 'Blog content here...',
+    category: 'technology',
+    tags: ['javascript', 'tutorial'],
+    status: 'pending'
+  })
+});
+
+// Response: { success: true, message: string, blog: Blog }
+```
+
+#### PUT /blogs/:id
+```javascript
+const response = await fetch(`/api/blogs/${blogId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    title: 'Updated Title',
+    content: 'Updated content...'
+  })
+});
+
+// Response: { success: true, message: string, blog: Blog }
+```
+
+#### DELETE /blogs/:id
+```javascript
+const response = await fetch(`/api/blogs/${blogId}`, {
+  method: 'DELETE',
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+// Response: { success: true, message: string }
+```
+
+#### POST /blogs/:id/like
+```javascript
+const response = await fetch(`/api/blogs/${blogId}/like`, {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+// Response: { success: true, message: string, likeCount: number, isLiked: boolean }
+```
+
+#### GET /blogs/user/:userId
+```javascript
+const response = await fetch(`/api/blogs/user/${userId}?page=1&limit=10`);
+
+// Response: BlogListResponse
+```
+
+### Comment Endpoints
+
+#### GET /comments/blog/:blogId
+```javascript
+const params = new URLSearchParams({
+  page: '1',
+  limit: '10',
+  sort: 'newest'
+});
+
+const response = await fetch(`/api/comments/blog/${blogId}?${params}`);
+
+// Response: CommentListResponse
+```
+
+#### POST /comments/blog/:blogId
+```javascript
+const response = await fetch(`/api/comments/blog/${blogId}`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    content: 'Great article!',
+    parentComment: parentCommentId // Optional, for replies
+  })
+});
+
+// Response: { success: true, message: string, comment: Comment }
+```
+
+#### GET /comments/:commentId/replies
+```javascript
+const response = await fetch(`/api/comments/${commentId}/replies?page=1&limit=5`);
+
+// Response: { success: true, count: number, total: number, pages: number, currentPage: number, replies: Comment[] }
+```
+
+#### PUT /comments/:id
+```javascript
+const response = await fetch(`/api/comments/${commentId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    content: 'Updated comment content'
+  })
+});
+
+// Response: { success: true, message: string, comment: Comment }
+```
+
+#### DELETE /comments/:id
+```javascript
+const response = await fetch(`/api/comments/${commentId}`, {
+  method: 'DELETE',
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+// Response: { success: true, message: string }
+```
+
+#### POST /comments/:id/like
+```javascript
+const response = await fetch(`/api/comments/${commentId}/like`, {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+// Response: { success: true, message: string, likeCount: number, isLiked: boolean }
+```
+
+### Admin Endpoints (Admin Role Required)
+
+#### GET /admin/dashboard
+```javascript
+const response = await fetch('/api/admin/dashboard', {
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: { success: true, stats: AdminStats }
+```
+
+#### GET /admin/blogs
+```javascript
+const params = new URLSearchParams({
+  page: '1',
+  limit: '10',
+  status: 'pending' // Optional filter
+});
+
+const response = await fetch(`/api/admin/blogs?${params}`, {
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: BlogListResponse
+```
+
+#### GET /admin/blogs/pending
+```javascript
+const response = await fetch('/api/admin/blogs/pending?page=1&limit=10', {
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: BlogListResponse
+```
+
+#### PUT /admin/blogs/:id/approve
+```javascript
+const response = await fetch(`/api/admin/blogs/${blogId}/approve`, {
+  method: 'PUT',
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: { success: true, message: string, blog: Blog }
+```
+
+#### PUT /admin/blogs/:id/reject
+```javascript
+const response = await fetch(`/api/admin/blogs/${blogId}/reject`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${adminToken}`
+  },
+  body: JSON.stringify({
+    reason: 'Content does not meet guidelines'
+  })
+});
+
+// Response: { success: true, message: string, blog: Blog }
+```
+
+#### PUT /admin/blogs/:id/toggle-hide
+```javascript
+const response = await fetch(`/api/admin/blogs/${blogId}/toggle-hide`, {
+  method: 'PUT',
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: { success: true, message: string, blog: Blog }
+```
+
+#### DELETE /admin/blogs/:id
+```javascript
+const response = await fetch(`/api/admin/blogs/${blogId}`, {
+  method: 'DELETE',
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: { success: true, message: string }
+```
+
+#### GET /admin/users
+```javascript
+const response = await fetch('/api/admin/users?page=1&limit=10', {
+  headers: { 'Authorization': `Bearer ${adminToken}` }
+});
+
+// Response: { success: true, count: number, total: number, pages: number, currentPage: number, users: UserWithStats[] }
+```
+
+### Stats Endpoints
+
+#### GET /stats
+```javascript
+// Get platform statistics - total blogs, comments, likes, and views
+const response = await fetch('/api/stats');
+
+// Response: StatsResponse
+// Example response:
+// {
+//   "success": true,
+//   "data": {
+//     "totalBlogs": 150,
+//     "totalComments": 425,
+//     "totalLikes": 1230,
+//     "totalViews": 15420,
+//     "breakdown": {
+//       "blogLikes": 980,
+//       "commentLikes": 250
+//     }
+//   }
+// }
+```
+
+## Error Response Format
+```typescript
+interface ErrorResponse {
+  success: false;
+  message: string;
+  errors?: Array<{
+    field: string;
+    message: string;
+  }>; // For validation errors
+  stack?: string; // Only in development
+}
+```
+
+## Common HTTP Status Codes
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request (validation errors)
+- `401` - Unauthorized (not authenticated)
+- `403` - Forbidden (insufficient permissions)
+- `404` - Not Found
+- `429` - Too Many Requests (rate limited)
+- `500` - Internal Server Error
+
+## Rate Limiting Headers
+```javascript
+// Check remaining requests
+const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+```
+
+## Frontend Implementation Examples
+
+### Auth Context/Hook
+```javascript
+// useAuth.js
+const useAuth = () => {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  
+  const login = async (email, password) => {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+    }
+    
+    return data;
+  };
+  
+  return { user, token, login };
+};
+```
+
+### API Service
+```javascript
+// api.js
+class ApiService {
+  constructor(baseURL = '/api') {
+    this.baseURL = baseURL;
+    this.token = localStorage.getItem('token');
+  }
+  
+  async request(endpoint, options = {}) {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(this.token && { Authorization: `Bearer ${this.token}` }),
+        ...options.headers
+      },
+      ...options
+    };
+    
+    const response = await fetch(`${this.baseURL}${endpoint}`, config);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || 'Request failed');
+    }
+    
+    return data;
+  }
+  
+  // Blog methods
+  getBlogs(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/blogs${query ? `?${query}` : ''}`);
+  }
+  
+  createBlog(blogData) {
+    return this.request('/blogs', {
+      method: 'POST',
+      body: JSON.stringify(blogData)
+    });
+  }
+  
+  // Stats methods
+  getStats() {
+    return this.request('/stats');
+  }
+}
+```
+
+### Error Handling
+```javascript
+// errorHandler.js
+const handleApiError = (error, setError) => {
+  if (error.response?.status === 401) {
+    // Redirect to login
+    window.location.href = '/login';
+  } else if (error.response?.data?.errors) {
+    // Handle validation errors
+    const validationErrors = error.response.data.errors.reduce((acc, err) => {
+      acc[err.field] = err.message;
+      return acc;
+    }, {});
+    setError(validationErrors);
+  } else {
+    // Handle general errors
+    setError({ general: error.message });
+  }
+};
+```
+
+## Environment Variables for Frontend
+```javascript
+// .env
+REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_ITEMS_PER_PAGE=10
+```
