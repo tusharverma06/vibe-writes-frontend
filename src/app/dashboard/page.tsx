@@ -125,7 +125,7 @@ export default function DashboardPage() {
 
         {/* Stats Overview */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
+          <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Blogs</CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
@@ -138,7 +138,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Views</CardTitle>
               <EyeIcon className="h-4 w-4 text-muted-foreground" />
@@ -151,7 +151,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Likes</CardTitle>
               <Heart className="h-4 w-4 text-muted-foreground" />
@@ -164,7 +164,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Comments</CardTitle>
               <MessageCircle className="h-4 w-4 text-muted-foreground" />
@@ -180,8 +180,8 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="border-0 shadow-soft bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+            <CardContent className="p-8">
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild className="flex-1">
                   <Link href="/write">
@@ -214,7 +214,7 @@ export default function DashboardPage() {
           </TabsList>
 
           <TabsContent value="blogs" className="space-y-6">
-            <Card>
+            <Card className="border-0 shadow-soft">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>My Blog Posts</CardTitle>
@@ -239,7 +239,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="space-y-4">
                     {myBlogs.map((blog) => (
-                      <div key={blog._id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={blog._id} className="flex items-center justify-between p-6 border-0 rounded-xl shadow-soft hover:shadow-medium transition-all duration-200 bg-background/50 backdrop-blur-sm">
                         <div className="flex items-center gap-4">
                           {blog.coverImage && (
                             <img 
@@ -336,7 +336,7 @@ export default function DashboardPage() {
 
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              <Card>
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20">
                 <CardHeader>
                   <CardTitle>Blog Status Distribution</CardTitle>
                 </CardHeader>
@@ -358,7 +358,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-950/20 dark:to-blue-950/20">
                 <CardHeader>
                   <CardTitle>Performance Overview</CardTitle>
                 </CardHeader>
@@ -404,7 +404,7 @@ const DashboardSkeleton = () => (
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i}>
+          <Card key={i} className="border-0 shadow-soft">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-4 w-4" />
@@ -417,8 +417,8 @@ const DashboardSkeleton = () => (
         ))}
       </div>
 
-      <Card className="mb-8">
-        <CardContent className="p-6">
+      <Card className="mb-8 border-0 shadow-soft">
+        <CardContent className="p-8">
           <div className="flex gap-4">
             <Skeleton className="h-10 flex-1" />
             <Skeleton className="h-10 flex-1" />
@@ -427,7 +427,7 @@ const DashboardSkeleton = () => (
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-0 shadow-soft">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
         </CardHeader>

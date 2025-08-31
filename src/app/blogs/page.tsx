@@ -240,8 +240,8 @@ export default function BlogsPage() {
           </div>
 
           {/* Search and Filters */}
-          <Card>
-            <CardContent className="p-6">
+          <Card className="border-0 shadow-soft bg-card/50 backdrop-blur-sm">
+            <CardContent className="p-8">
               {/* Search Bar */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -249,7 +249,7 @@ export default function BlogsPage() {
                   placeholder="Search blogs..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-0 bg-background/50 backdrop-blur-sm shadow-soft focus:shadow-medium transition-all duration-200"
                 />
               </div>
 
@@ -261,7 +261,7 @@ export default function BlogsPage() {
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       {CATEGORIES.map(category => (
                         <SelectItem key={category} value={category.toLowerCase()}>
                           {category}
@@ -306,7 +306,7 @@ export default function BlogsPage() {
                       <Badge
                         key={tag}
                         variant={selectedTags.includes(tag) ? "default" : "secondary"}
-                        className="cursor-pointer hover:bg-primary/80 transition-colors"
+                        className="cursor-pointer hover:bg-primary/80 transition-all duration-200 hover:scale-105 hover:shadow-soft border-0"
                         onClick={() => handleTagToggle(tag)}
                       >
                         {tag}
@@ -385,8 +385,8 @@ const BlogsPageSkeleton = ({ viewMode }: { viewMode: 'grid' | 'list' }) => (
     </div>
 
     {/* Filter Card Skeleton */}
-    <Card className="mb-8">
-      <CardContent className="p-6">
+    <Card className="mb-8 border-0 shadow-soft bg-card/50 backdrop-blur-sm">
+      <CardContent className="p-8">
         <Skeleton className="h-10 w-full mb-4" />
         <div className="flex gap-4 mb-4">
           <Skeleton className="h-10 flex-1" />
@@ -407,8 +407,8 @@ const BlogsPageSkeleton = ({ viewMode }: { viewMode: 'grid' | 'list' }) => (
         : 'grid-cols-1'
     }`}>
       {Array.from({ length: 9 }).map((_, i) => (
-        <Card key={i}>
-          <Skeleton className="aspect-video w-full" />
+        <Card key={i} className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+          <Skeleton className="aspect-video w-full rounded-t-xl" />
           <CardContent className="p-4">
             <div className="flex gap-2 mb-2">
               <Skeleton className="h-5 w-16" />

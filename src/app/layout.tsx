@@ -44,11 +44,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <AuthProvider>
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
             <Navbar />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-purple-50/20 pointer-events-none" />
+              <div className="relative">{children}</div>
+            </main>
             <Footer />
           </div>
           <Toaster />

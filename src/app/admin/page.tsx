@@ -55,10 +55,10 @@ export default function AdminDashboard() {
   const [allBlogs, setAllBlogs] = useState<Blog[]>([]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
+    // if (!isAuthenticated) {
+    //   router.push('/login');
+    //   return;
+    // }
 
     loadDashboardData();
   }, [isAuthenticated, user, router]);
